@@ -37,9 +37,10 @@ bower install @sebastiandotdev/vue3-datatable --save
 <script setup lang="ts">
     import { ref } from "vue";
     import Vue3Datatable from "@bhplugin/vue3-datatable";
+    import type { Column } from '@sebastiandotdev/vue3-datatable'
     import "@bhplugin/vue3-datatable/dist/style.css";
 
-    const cols = ref([
+    const cols = ref<Column[]>([
       { field: "id", title: "ID", width: "90px", filter: false },
       { field: "name", title: "Name" },
       { field: "username", title: "Username" },
