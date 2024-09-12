@@ -1,7 +1,7 @@
 # @sebastiandotdev/vue3-datatable
 
 > [!IMPORTANT]
-> This project is a fork of [] made to improve typescript support.
+> This project is a fork of [bhaveshpatel200/vue3-datatable](https://github.com/bhaveshpatel200/vue3-datatable) made to improve typescript support.
 
 ## Example
 
