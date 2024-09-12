@@ -1,4 +1,7 @@
-# @bhplugin/vue3-datatable
+# @sebastiandotdev/vue3-datatable
+
+> [!IMPORTANT]
+> This project is a fork of [] made to improve typescript support.
 
 ## Example
 
@@ -9,19 +12,19 @@
 #### NPM
 
 ```bash
-npm install @bhplugin/vue3-datatable --save
+npm install @sebastiandotdev/vue3-datatable --save
 ```
 
 #### Yarn
 
 ```bash
-yarn add @bhplugin/vue3-datatable
+yarn add @sebastiandotdev/vue3-datatable
 ```
 
 #### Bower
 
 ```bash
-bower install @bhplugin/vue3-datatable --save
+bower install @sebastiandotdev/vue3-datatable --save
 ```
 
 ## Usage
