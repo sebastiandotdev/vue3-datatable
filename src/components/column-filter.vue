@@ -69,7 +69,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, withDefaults } from 'vue';
+import { onBeforeUnmount, onMounted } from 'vue';
 import type { Column, ColumnFilterEmits, ColumnFilterLangProps } from './types';
 
 const props = withDefaults(
