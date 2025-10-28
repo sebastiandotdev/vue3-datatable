@@ -453,6 +453,7 @@ export type Vue3DatatableProps<T = any> = {
      */
     selectRowOnClick?: boolean;
     columnChooser?: boolean;
+    resizeEnabled?: boolean;
 };
 
 /**
@@ -476,4 +477,5 @@ export type ColumnHeaderProps = {
     isFooter?: boolean;
     checkAll?: number | null | boolean;
     columnFilterLang?: ColumnFilterLangProps;
+    resizeEnabled?: boolean;
 };

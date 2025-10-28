@@ -10,6 +10,7 @@
                         :isOpenFilter="isOpenFilter"
                         :checkAll="selectedAll"
                         :columnFilterLang="props.columnFilterLang"
+                        :resize-enabled="props.resizeEnabled"
                         @selectAll="selectAll"
                         @sortChange="sortChange"
                         @filterChange="filterChange"
@@ -206,6 +207,7 @@ const props = withDefaults(defineProps<Vue3DatatableProps<T>>(), {
     sortColumn: 'id',
     sortDirection: 'asc',
     columnFilter: false,
+    resizeEnabled: false,
     columnFilterLang: () => ({
         no_filter: 'No filter',
         contain: 'Contain',

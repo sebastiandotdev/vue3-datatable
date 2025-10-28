@@ -1,34 +1,16 @@
 <template>
     <div class="bh-p-10">
         <div class="bh-mb-2">
-            <input
-                type="text"
-                v-model="params.search"
-                placeholder="Search..."
-                class="bh-border bh-border-solid bh-bg-white bh-p-2 bh-outline-0 bh-border-gray-200 focus:bh-border-gray-200 bh-rounded"
-            />
+            <input type="text" v-model="params.search" placeholder="Search..."
+                class="bh-border bh-border-solid bh-bg-white bh-p-2 bh-outline-0 bh-border-gray-200 focus:bh-border-gray-200 bh-rounded" />
             <button type="button" class="btn mb-4 bh-p-2" @click="datatable?.reset()">Reset</button> <br />
         </div>
-
-        <vue3-datatable
-            ref="datatable"
-            :loading="loading"
-            :rows="rows"
-            :columns="cols"
-            :totalRows="total_rows"
-            :isServerMode="true"
-            :page="params.current_page"
-            :pageSize="params.pagesize"
-            :pageSizeOptions="[3, 5, 10]"
-            :sortable="true"
-            :sortColumn="params.sort_column"
-            :sortDirection="params.sort_direction"
-            :search="params.search"
-            :hasCheckbox="true"
-            :columnFilter="false"
-            @change="changeServer"
-        >
-        </vue3-datatable>
+            <vue3-datatable ref="datatable" :loading="loading" :rows="rows" :columns="cols" :totalRows="total_rows"
+                :isServerMode="true" :page="params.current_page" :pageSize="params.pagesize"
+                :pageSizeOptions="[3, 5, 10]" :sortable="true" :sortColumn="params.sort_column"
+                :sortDirection="params.sort_direction" :search="params.search" :hasCheckbox="true" :columnFilter="false"
+                :resizeEnabled="true" @change="changeServer" class="datatable" >
+            </vue3-datatable>
     </div>
 </template>
 <script setup lang="ts">
