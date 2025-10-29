@@ -1,7 +1,7 @@
 <template>
     <tr key="hdrrow">
         <th v-if="props.all.hasCheckbox" :key="'chkall'" class="bh-w-px" :class="{
-            'bh-sticky bh-bg-blue-light bh-z-[1]': props.all.stickyHeader || props.all.stickyFirstColumn,
+            'bh-sticky bh-bg-blue-light bh-z-50': props.all.stickyHeader || props.all.stickyFirstColumn,
             'bh-top-0': props.all.stickyHeader,
             'bh-left-0': props.all.stickyFirstColumn,
         }">
@@ -18,8 +18,8 @@
             <th v-if="!col.hide" :key="col.field" :ref="el => setHeaderRef(el, j)"
                 class="bh-select-none bh-z-[1] bh-relative bh-truncate" :class="[
                     props.all.sortable && col.sort ? 'bh-cursor-pointer' : '',
-                    j === 0 && props.all.stickyFirstColumn ? 'bh-sticky bh-left-0 bh-bg-blue-light' : '',
-                    props.all.hasCheckbox && j === 0 && props.all.stickyFirstColumn ? 'bh-left-[52px]' : '', props.all.cellClass
+    j === 0 && props.all.stickyFirstColumn ? 'bh-sticky bh-left-0 bh-bg-blue-light !bh-z-50' : '',
+    props.all.hasCheckbox && j === 0 && props.all.stickyFirstColumn ? 'bh-left-[52px] !bh-z-50' : '', props.all.cellClass
                 ]" :style="{
                     width: col.width,
                     'min-width': columnWidths[j] || col.minWidth,
@@ -65,14 +65,6 @@
                             @filterChange="emit('filterChange')" />
                     </div>
                 </template>
-
-                <!-- Resize Handle -->
-                <div v-if="props.all.resizeEnabled" class="bh-absolute bh-top-0 bh-right-0 bh-h-full w-[4px] bh-cursor-col-resize bh-z-20 bh-rounded-sm 
-         bh-transition-all bh-duration-200 
-         bh-bg-transparent group-hover:bh-bg-blue-400/30 
-         hover:bh-bg-blue-500/50 active:bh-bg-blue-600 bh-shadow-[inset_0_0_2px_rgba(0,0,0,0.2)]"
-                    @mousedown="startResize($event, j, col)">
-                </div>
 
                 <div v-if="props.all.resizeEnabled"
                     class="bh-absolute bh-top-0 bh-right-0 bh-w-[2px] bh-h-1/2 bh-translate-y-1/2 bh-cursor-col-resize bh-z-10 bh-bg-gray-400 active:bh-bg-primary bh-rounded-full"
