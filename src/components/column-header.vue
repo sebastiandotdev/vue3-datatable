@@ -21,7 +21,7 @@
     j === 0 && props.all.stickyFirstColumn ? 'bh-sticky bh-left-0 bh-bg-blue-light !bh-z-50' : '',
     props.all.hasCheckbox && j === 0 && props.all.stickyFirstColumn ? 'bh-left-[52px] !bh-z-50' : '', props.all.cellClass
                 ]" :style="{
-                    width: col.width,
+                    width: columnWidths[j] ||col.width,
                     'min-width': columnWidths[j] || col.minWidth,
                     'max-width': col.maxWidth,
                 }">
@@ -127,7 +127,7 @@ const handleResize = (event: MouseEvent) => {
     if (!resizeState.isResizing) return;
 
     const diff = event.pageX - resizeState.startX;
-    const newWidth = Math.max(50, resizeState.startWidth + diff); // Mínimo 50px
+    const newWidth = Math.max(10, resizeState.startWidth + diff); // Mínimo 50px
 
     columnWidths[resizeState.columnIndex] = `${newWidth}px`;
 };
