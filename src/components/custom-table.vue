@@ -301,6 +301,9 @@ defineExpose<Vue3DatatableExposedMethods<T>>({
     getFilteredRows() {
         return filteredRows();
     },
+    getVisibleRows() {
+        return getVisibleRows();
+    },
 });
 
 const stringFormat = (template: string, ...args: any[]) => {
@@ -361,122 +364,126 @@ const filteredRows = () => {
     let rows = props.rows || [];
 
     if (!props.isServerMode) {
-        props.columns?.forEach((d) => {
-            if (d.filter && ((d.value !== undefined && d.value !== null && d.value !== '') || d.condition === 'is_null' || d.condition == 'is_not_null')) {
-                // string filters
-                if (d.type === 'string') {
-                    if (d.value && !d.condition) {
-                        d.condition = 'contain';
+        // column filters
+        if (props.columnFilter) {
+            props.columns?.forEach((d) => {
+                if (d.filter && ((d.value !== undefined && d.value !== null && d.value !== '') || d.condition === 'is_null' || d.condition == 'is_not_null')) {
+                    // string filters
+                    if (d.type === 'string') {
+                        if (d.value && !d.condition) {
+                            d.condition = 'contain';
+                        }
+
+                        if (d.condition === 'contain') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field)?.toString().toLowerCase().includes(d.value.toLowerCase());
+                            });
+                        } else if (d.condition === 'not_contain') {
+                            rows = rows.filter((item) => {
+                                return !cellValue(item, d.field)?.toString().toLowerCase().includes(d.value.toLowerCase());
+                            });
+                        } else if (d.condition === 'equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field)?.toString().toLowerCase() === d.value.toLowerCase();
+                            });
+                        } else if (d.condition === 'not_equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field)?.toString().toLowerCase() !== d.value.toLowerCase();
+                            });
+                        } else if (d.condition == 'start_with') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field)?.toString().toLowerCase().indexOf(d.value.toLowerCase()) === 0;
+                            });
+                        } else if (d.condition == 'end_with') {
+                            rows = rows.filter((item) => {
+                                return (
+                                    cellValue(item, d.field)
+                                        ?.toString()
+                                        .toLowerCase()
+                                        .substr(d.value.length * -1) === d.value.toLowerCase()
+                                );
+                            });
+                        }
+                    }
+                    // number filters
+                    else if (d.type === 'number') {
+                        if (d.value && !d.condition) {
+                            d.condition = 'equal';
+                        }
+
+                        if (d.condition === 'equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) === parseFloat(d.value);
+                            });
+                        } else if (d.condition === 'not_equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) !== parseFloat(d.value);
+                            });
+                        } else if (d.condition === 'greater_than') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) > parseFloat(d.value);
+                            });
+                        } else if (d.condition === 'greater_than_equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) >= parseFloat(d.value);
+                            });
+                        } else if (d.condition === 'less_than') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) < parseFloat(d.value);
+                            });
+                        } else if (d.condition === 'less_than_equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) <= parseFloat(d.value);
+                            });
+                        }
+                    }
+                    // date filters
+                    else if (d.type === 'date') {
+                        if (d.value && !d.condition) {
+                            d.condition = 'equal';
+                        }
+
+                        if (d.condition === 'equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) === d.value;
+                            });
+                        } else if (d.condition === 'not_equal') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) !== d.value;
+                            });
+                        } else if (d.condition === 'greater_than') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) > d.value;
+                            });
+                        } else if (d.condition === 'less_than') {
+                            rows = rows.filter((item) => {
+                                return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) < d.value;
+                            });
+                        }
+                    }
+                    // boolean filters
+                    else if (d.type === 'bool') {
+                        rows = rows.filter((item) => {
+                            return cellValue(item, d.field) === d.value;
+                        });
                     }
 
-                    if (d.condition === 'contain') {
+                    if (d.condition === 'is_null') {
                         rows = rows.filter((item) => {
-                            return cellValue(item, d.field)?.toString().toLowerCase().includes(d.value.toLowerCase());
+                            return cellValue(item, d.field) == null || cellValue(item, d.field) == '';
                         });
-                    } else if (d.condition === 'not_contain') {
+                        d.value = '';
+                    } else if (d.condition === 'is_not_null') {
+                        d.value = '';
                         rows = rows.filter((item) => {
-                            return !cellValue(item, d.field)?.toString().toLowerCase().includes(d.value.toLowerCase());
-                        });
-                    } else if (d.condition === 'equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field)?.toString().toLowerCase() === d.value.toLowerCase();
-                        });
-                    } else if (d.condition === 'not_equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field)?.toString().toLowerCase() !== d.value.toLowerCase();
-                        });
-                    } else if (d.condition == 'start_with') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field)?.toString().toLowerCase().indexOf(d.value.toLowerCase()) === 0;
-                        });
-                    } else if (d.condition == 'end_with') {
-                        rows = rows.filter((item) => {
-                            return (
-                                cellValue(item, d.field)
-                                    ?.toString()
-                                    .toLowerCase()
-                                    .substr(d.value.length * -1) === d.value.toLowerCase()
-                            );
+                            return cellValue(item, d.field);
                         });
                     }
                 }
-                // number filters
-                else if (d.type === 'number') {
-                    if (d.value && !d.condition) {
-                        d.condition = 'equal';
-                    }
+            });
+        }
 
-                    if (d.condition === 'equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) === parseFloat(d.value);
-                        });
-                    } else if (d.condition === 'not_equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) !== parseFloat(d.value);
-                        });
-                    } else if (d.condition === 'greater_than') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) > parseFloat(d.value);
-                        });
-                    } else if (d.condition === 'greater_than_equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) >= parseFloat(d.value);
-                        });
-                    } else if (d.condition === 'less_than') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) < parseFloat(d.value);
-                        });
-                    } else if (d.condition === 'less_than_equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && parseFloat(cellValue(item, d.field)) <= parseFloat(d.value);
-                        });
-                    }
-                }
-                // date filters
-                else if (d.type === 'date') {
-                    if (d.value && !d.condition) {
-                        d.condition = 'equal';
-                    }
-
-                    if (d.condition === 'equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) === d.value;
-                        });
-                    } else if (d.condition === 'not_equal') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) !== d.value;
-                        });
-                    } else if (d.condition === 'greater_than') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) > d.value;
-                        });
-                    } else if (d.condition === 'less_than') {
-                        rows = rows.filter((item) => {
-                            return cellValue(item, d.field) && dateFormat(cellValue(item, d.field)) < d.value;
-                        });
-                    }
-                }
-                // boolean filters
-                else if (d.type === 'bool') {
-                    rows = rows.filter((item) => {
-                        return cellValue(item, d.field) === d.value;
-                    });
-                }
-
-                if (d.condition === 'is_null') {
-                    rows = rows.filter((item) => {
-                        return cellValue(item, d.field) == null || cellValue(item, d.field) == '';
-                    });
-                    d.value = '';
-                } else if (d.condition === 'is_not_null') {
-                    d.value = '';
-                    rows = rows.filter((item) => {
-                        return cellValue(item, d.field);
-                    });
-                }
-            }
-        });
-
+        // global search
         if (currentSearch.value && rows?.length) {
             let final: Array<any> = [];
 
@@ -499,18 +506,20 @@ const filteredRows = () => {
         }
 
         // sort rows
-        var collator = new Intl.Collator(undefined, {
-            numeric: props.columns.find((col) => col.field == currentSortColumn.value)?.type === 'number',
-            sensitivity: 'base',
-        });
-        const sortOrder = currentSortDirection.value === 'desc' ? -1 : 1;
+        if (props.sortable) {
+            var collator = new Intl.Collator(undefined, {
+                numeric: props.columns.find((col) => col.field == currentSortColumn.value)?.type === 'number',
+                sensitivity: 'base',
+            });
+            const sortOrder = currentSortDirection.value === 'desc' ? -1 : 1;
 
-        rows.sort((a: any, b: any): number => {
-            const valA = currentSortColumn.value?.split('.').reduce((obj: any, key: string) => obj?.[key], a);
-            const valB = currentSortColumn.value?.split('.').reduce((obj: any, key: string) => obj?.[key], b);
+            rows.sort((a: any, b: any): number => {
+                const valA = currentSortColumn.value?.split('.').reduce((obj: any, key: string) => obj?.[key], a);
+                const valB = currentSortColumn.value?.split('.').reduce((obj: any, key: string) => obj?.[key], b);
 
-            return collator.compare(valA, valB) * sortOrder;
-        });
+                return collator.compare(valA, valB) * sortOrder;
+            });
+        }
     }
 
     return rows;
@@ -529,6 +538,7 @@ const filterRows = () => {
     }
 
     filterItems.value = result || [];
+    return result;
 };
 watch(
     () => props.loading,
@@ -583,11 +593,19 @@ const changePage = () => {
 };
 watch(() => currentPage.value, changePage);
 
+// watch page prop
+watch(
+    () => props.page,
+    (newPage) => {
+        currentPage.value = newPage;
+    }
+);
+
 // row update
 const changeRows = () => {
-    if (!props.isServerMode) {
-        currentPage.value = 1;
-    }
+    // if (!props.isServerMode) {
+    //     currentPage.value = 1;
+    // }
     selectAll(false);
     filterRows();
 };
@@ -831,5 +849,9 @@ const isRowSelected = (index: number) => {
         return selected.value.includes(uniqueKey.value ? rows[uniqueKey.value as never] : index);
     }
     return false;
+};
+const getVisibleRows = () => {
+    const rows = filterRows();
+    return rows;
 };
 </script>
